@@ -42,8 +42,7 @@ jobs:
         pip install -r requirements.txt
         pip install pytest
 
-
-      - name: Lancer les tests unitaires
+    - name: Lancer les tests unitaires
       run: |
         pytest test_etl.py   # <--- C'est ici qu'on lance le test !
 
