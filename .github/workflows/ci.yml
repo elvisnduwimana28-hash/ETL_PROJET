@@ -10,7 +10,6 @@ jobs:
   test-pipeline:
     runs-on: ubuntu-latest
 
-    # Optionnel : On peut lancer un service PostgreSQL de test directement dans GitHub Actions !
     services:
       postgres:
         image: postgres:15-alpine
@@ -27,35 +26,35 @@ jobs:
           --health-retries 5
 
     steps:
-    - name: Récupérer le code source
-      uses: actions/checkout@v4
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
 
-    - name: Configurer Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-        cache: 'pip'
+      - name: Configurer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
 
-    - name: Installer les dépendances
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest
+      - name: Installer les dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest psutil
 
-    - name: Lancer les tests unitaires
-      run: |
-        pytest test_etl.py   # <--- C'est ici qu'on lance le test !
+      - name: Lancer le test des ressources système (CPU & RAM)
+        run: |
+          pytest test_system_resources.py
 
-    - name: Lancer le test de monitoring système (CPU & RAM)
-      run: |
-        pytest test_system_resources.py
+      - name: Lancer les tests unitaires
+        run: |
+          pytest test_etl.py
 
-    - name: Exécuter le pipeline ETL (Test d'intégration)
-      env:
-        POSTGRES_USER: myuser
-        POSTGRES_PASSWORD: mypassword
-        POSTGRES_DB: mydb
-        POSTGRES_HOST: localhost
-        POSTGRES_PORT: 5432
-      run: |
-        python main.py
+      - name: Exécuter le pipeline ETL (Test d'intégration)
+        env:
+          POSTGRES_USER: myuser
+          POSTGRES_PASSWORD: mypassword
+          POSTGRES_DB: mydb
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+        run: |
+          python main.py
