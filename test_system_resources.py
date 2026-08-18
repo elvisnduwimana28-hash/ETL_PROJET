@@ -10,8 +10,8 @@ def test_check_system_resources():
     print(f"Utilisation actuelle du CPU : {cpu_usage}%")
 
     # Assertions : On vérifie que la RAM n'est pas saturée à plus de 90%
-    assert memory_usage < 90.0, fitaire critique de la RAM : {memory_usage}%"
+    assert memory_usage < 90.0, f"Alerte critique de la RAM : {memory_usage}%"
     
-    # On peut aussi s'assurer que les valeurs retournées sont valides
+    # On s'assure que les valeurs retournées sont valides
     assert 0 <= cpu_usage <= 100
     assert 0 <= memory_usage <= 100
