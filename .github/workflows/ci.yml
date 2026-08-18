@@ -46,6 +46,10 @@ jobs:
       run: |
         pytest test_etl.py   # <--- C'est ici qu'on lance le test !
 
+    - name: Lancer le test de monitoring système (CPU & RAM)
+        run: |
+          pytest test_system_resources.py
+
     - name: Exécuter le pipeline ETL (Test d'intégration)
       env:
         POSTGRES_USER: myuser
