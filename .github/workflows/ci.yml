@@ -1,0 +1,52 @@
+name: Data Pipeline CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test-pipeline:
+    runs-on: ubuntu-latest
+
+    # Optionnel : On peut lancer un service PostgreSQL de test directement dans GitHub Actions !
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: myuser
+          POSTGRES_PASSWORD: mypassword
+          POSTGRES_DB: mydb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Récupérer le code source
+      uses: actions/checkout@v4
+
+    - name: Configurer Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: Installer les dépendances
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Exécuter le pipeline ETL (Test d'intégration)
+      env:
+        POSTGRES_USER: myuser
+        POSTGRES_PASSWORD: mypassword
+        POSTGRES_DB: mydb
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+      run: |
+        python main.py
